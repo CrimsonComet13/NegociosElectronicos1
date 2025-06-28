@@ -1,0 +1,72 @@
+-- Crear la base de datos
+CREATE DATABASE reminiscencia_photography;
+USE reminiscencia_photography;
+
+-- Tabla de usuarios
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    telefono VARCHAR(20),
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('admin', 'colaborador', 'cliente') NOT NULL,
+    tipo_colaborador ENUM('fotografo', 'videografo', 'auxiliar', ''),
+    rango_colaborador ENUM('I', 'II', 'III', ''),
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de eventos
+CREATE TABLE eventos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    fecha_evento DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME,
+    lugar VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    personas_estimadas INT,
+    estado ENUM('pendiente', 'confirmado', 'cancelado', 'completado') DEFAULT 'pendiente',
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cliente_id) REFERENCES usuarios(id)
+);
+
+-- Tabla de relación evento-colaborador
+CREATE TABLE evento_colaborador (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evento_id INT NOT NULL,
+    colaborador_id INT NOT NULL,
+    rol ENUM('fotografo', 'videografo', 'auxiliar') NOT NULL,
+    FOREIGN KEY (evento_id) REFERENCES eventos(id),
+    FOREIGN KEY (colaborador_id) REFERENCES usuarios(id)
+);
+
+-- Tabla de llamadas
+CREATE TABLE llamadas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    comentarios TEXT,
+    estado ENUM('pendiente', 'atendida', 'cancelada') DEFAULT 'pendiente',
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de notificaciones
+CREATE TABLE notificaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    mensaje TEXT NOT NULL,
+    leido BOOLEAN DEFAULT FALSE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+-- Insertar usuario administrador inicial
+INSERT INTO usuarios (nombre, email, password, rol) 
+VALUES ('Administrador', 'admin@reminiscencia.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
+-- Contraseña: password

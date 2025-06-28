@@ -1,0 +1,4 @@
+# Permitir acceso a la carpeta de uploads
+RewriteEngine On
+RewriteRule ^uploads/ - [L]
+Deny From All
